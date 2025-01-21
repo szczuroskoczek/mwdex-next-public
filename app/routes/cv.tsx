@@ -1,8 +1,8 @@
 import { GoBackHeader } from "~/lib/GoBackHeader";
 
 import { makeMeta } from "~/lib/makeMeta";
-import { json, useLoaderData } from "@remix-run/react";
-import { Suspense, useState } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import {
   DownloadIcon,
   MailIcon,
@@ -15,8 +15,6 @@ import { QRCodeSVG } from "qrcode.react";
 
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { token } from "~/cookies.server";
-
-import { motion } from "motion/react";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -49,7 +47,55 @@ export const meta = makeMeta({
   description: "Moje CV",
 });
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+interface I_CV {
+  personalInfo: {
+    name: string;
+    location: string;
+    email: string;
+    phone: string;
+    www: string;
+    title: string;
+    languages: {
+      flag: string;
+      language: {
+        en: string;
+        pl: string;
+      };
+      proficiency: string;
+    }[];
+  };
+  professionalSummary: {
+    en: string[];
+    pl: string[];
+  };
+  skills: {
+    en: string[];
+    pl: string[];
+  };
+  workHistory: {
+    company: string;
+    position: string;
+    period: {
+      start: string;
+      end: string;
+    };
+    description: {
+      en: string;
+      pl: string;
+    };
+  }[];
+  education: {
+    institution?: string;
+    degree?: string;
+    fieldOfStudy?: string;
+    startYear?: string;
+    endYear?: string;
+  }[];
+}
+
+export const loader = async ({
+  request,
+}: LoaderFunctionArgs): Promise<null | I_CV> => {
   const cookie = await token.parse(request.headers.get("Cookie"));
 
   if (cookie !== "hirekrystian") {
@@ -68,7 +114,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
   }
 
-  const CV = {
+  const CV: I_CV = {
     personalInfo: {
       name: "Krystian Mikołajczyk",
       location: "255 Zagorzyn, 33-390, Poland",
@@ -181,32 +227,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 const NoContent: React.FC = () => {
   return (
-    <motion.div
-      className="max-w-2xl mx-auto text-center"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      <motion.div
-        className="backdrop-blur-lg rounded-xl p-8 bg-white/5"
-        initial={{ scale: 0.9 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <motion.span
-          className="text-6xl mb-6 block"
-          animate={{
-            rotateY: [0, 360],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 3,
-          }}
-        >
-          🔒
-        </motion.span>
+    <div className="max-w-2xl mx-auto text-center">
+      <div className="backdrop-blur-lg rounded-xl p-8 bg-white/5">
+        <span className="text-6xl mb-6 block">🔒</span>
         <h1 className="text-3xl font-light text-white mb-4">
           Dostęp Zablokowany
         </h1>
@@ -228,14 +251,14 @@ const NoContent: React.FC = () => {
             Odblokuj
           </button>
         </form>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
 const Content: React.FC<{
-  data: NonNullable<Awaited<ReturnType<typeof loader>>>;
-}> = ({ data }) => {
+  data: I_CV;
+}> = ({ data }: { data: I_CV }) => {
   const [language, setLanguage] = useState<"pl" | "en">("pl");
   return (
     <div className="flex flex-col">
@@ -255,7 +278,7 @@ const Content: React.FC<{
           ).map(({ lang, label }) => (
             <button
               key={lang}
-              className={`px-4 m-2 rounded transition-all text-white flex items-center ${
+              className={`px-4 m-2 rounded text-white flex items-center ${
                 language === lang ? "bg-white/25" : ""
               }`}
               onClick={() => setLanguage(lang)}
@@ -277,7 +300,6 @@ const Content: React.FC<{
         className="w-full max-w-[210mm] bg-white rounded shadow-lg mx-auto overflow-hidden"
       >
         <div className="w-full h-full p-6 flex flex-col gap-6">
-          {/* Header Section with Personal Info and QR Code */}
           <header className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-600 pb-4">
             <div>
               <h1 className="text-4xl font leading-tight text-mwdf-500 drop-shadow-sm font-serif">
@@ -299,7 +321,7 @@ const Content: React.FC<{
                     />
                     {lang.language[language]}:{" "}
                     {
-                      // @ts-ignore
+                      // @ts-expect-error idk
                       { en: { native: "Native" }, pl: { native: "Ojczysty" } }[
                         language
                       ][lang.proficiency]
@@ -308,7 +330,6 @@ const Content: React.FC<{
                 ))}
               </div>
             </div>
-
             <div className="flex items-center gap-4 self-end">
               <div className="flex flex-col text-xs text-mwdf-700 p-3 rounded-md leading-relaxed">
                 <p className="flex justify-center items-center gap-1 self-end">
@@ -345,8 +366,6 @@ const Content: React.FC<{
               </div>
             </div>
           </header>
-
-          {/* Professional Summary */}
           <section className="space-y-2">
             <h3 className="text-sm font-bold mb-1 text-mwdf-600 uppercase">
               Professional Summary
@@ -357,8 +376,6 @@ const Content: React.FC<{
               </p>
             ))}
           </section>
-
-          {/* Skills */}
           <section>
             <h3 className="text-sm font-bold mb-2 text-mwdf-600 uppercase tracking-wider">
               Skills
@@ -374,8 +391,6 @@ const Content: React.FC<{
               ))}
             </div>
           </section>
-
-          {/* Work History */}
           <section className="flex-1">
             <h3 className="text-sm font-bold mb-2 text-mwdf-600 uppercase tracking-wider">
               Work Experience
@@ -411,7 +426,7 @@ const Content: React.FC<{
 };
 
 export default function Page() {
-  const data = useLoaderData() as any;
+  const data = useLoaderData() as Awaited<ReturnType<typeof loader>>;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-mwdf-500 to-mwdf-900 pt-24 px-4 pb-6">

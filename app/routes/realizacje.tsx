@@ -1,5 +1,4 @@
 import { GoBackHeader } from "~/lib/GoBackHeader";
-import { motion } from "framer-motion";
 import { makeMeta } from "~/lib/makeMeta";
 
 export const meta = makeMeta({
@@ -63,21 +62,11 @@ export default function Portfolio() {
     <div className="fixed inset-0 bg-black overflow-auto">
       <GoBackHeader />
       <div className="min-h-screen w-full bg-gradient-to-br from-mwdf-500 to-mwdf-900 pt-24 px-4 pb-12">
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
+        <section>
           <div className="container mx-auto flex md:flex-wrap flex-col md:flex-row">
-            {projects.map((project, index) => (
-              <motion.div
-                className="p-4"
-                key={project.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-              >
-                <motion.a
+            {projects.map((project) => (
+              <div className="p-4" key={project.name}>
+                <a
                   href={project.projectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -86,9 +75,7 @@ export default function Portfolio() {
                       "Ta strona otworzy się w nowej karcie. Kontynuować?"
                     ) && e.preventDefault();
                   }}
-                  className="block rounded-xl overflow-hidden backdrop-blur-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="block rounded-xl overflow-hidden backdrop-blur-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all"
                 >
                   <div className="p-6">
                     <h3 className="text-2xl font-light text-white mb-6">
@@ -97,18 +84,18 @@ export default function Portfolio() {
 
                     <div className="flex flex-nowrap items-end gap-4 mb-6">
                       <div className="relative group">
-                        <motion.img
+                        <img
                           src={project.desktopImage}
                           alt={`${project.name} - Desktop View`}
-                          className="w-[268px] rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300"
+                          className="w-[268px] rounded-lg shadow-lg group-hover:shadow-xl transition-all"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <div className="relative group">
-                        <motion.img
+                        <img
                           src={project.mobileImage}
                           alt={`${project.name} - Mobile View`}
-                          className="h-[113px] w-[78px] rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300"
+                          className="h-[113px] w-[78px] rounded-lg shadow-lg group-hover:shadow-xl transition-all"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
@@ -129,11 +116,11 @@ export default function Portfolio() {
                       ))}
                     </div>
                   </div>
-                </motion.a>
-              </motion.div>
+                </a>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
   );
