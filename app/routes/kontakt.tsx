@@ -2,6 +2,7 @@ import { GoBackHeader } from "~/lib/GoBackHeader";
 import { useEffect } from "react";
 import { makeMeta } from "~/lib/makeMeta";
 import { Link } from "@remix-run/react";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 export const meta = makeMeta({
   title: "Kontakt",
@@ -11,10 +12,18 @@ export const meta = makeMeta({
 
 export default function Kontakt() {
   useEffect(() => {
-    const token = Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
+    const token =
+      Math.random().toString(36).substr(2) +
+      Math.random().toString(36).substr(2);
     const script = document.createElement("script");
     script.src = `https://www.oferteo.pl/widget/firma/20/6647448?ext=2-0-1&token=${token}`;
     document.body.appendChild(script);
+
+    CustomEvent.trackEvent("oferteo_widget", "requested");
+
+    script.onload = () => {
+      CustomEvent.trackEvent("oferteo_widget", "loaded");
+    };
 
     return () => {
       document.body.removeChild(script);
@@ -42,9 +51,14 @@ export default function Kontakt() {
                 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 
                 border border-white/10 hover:border-white/20 
                 backdrop-blur-sm transition-all duration-300"
+              onClick={() => {
+                CustomEvent.trackEvent("kontakt_email", "click");
+              }}
             >
               <span className="text-2xl">📧</span>
-              <span className="text-white font-light">krystianb127098@outlook.com</span>
+              <span className="text-white font-light">
+                krystianb127098@outlook.com
+              </span>
             </a>
           </div>
 
@@ -56,6 +70,9 @@ export default function Kontakt() {
                 bg-gradient-to-r from-green-500/20 to-emerald-500/20 
                 border border-white/10 hover:border-white/20 
                 backdrop-blur-sm transition-all duration-300"
+              onClick={() => {
+                CustomEvent.trackEvent("contact_methods", "click", "telefon");
+              }}
             >
               <span className="text-2xl">📱</span>
               <span className="text-white font-light">795 615 510</span>

@@ -7,7 +7,7 @@
 import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
-import PiwikPro from '@piwikpro/react-piwik-pro';
+import PiwikPro from "@piwikpro/react-piwik-pro";
 
 startTransition(() => {
   hydrateRoot(
@@ -17,3 +17,12 @@ startTransition(() => {
     </StrictMode>
   );
 });
+
+PiwikPro.initialize(
+  "491d1c8d-c6ce-4e26-91b0-eeff26cc18cd",
+  "https://mwdex.piwik.pro",
+  {
+    dataLayerName:
+      process.env.NODE_ENV === "production" ? "dataLayer" : "dataLayerDev",
+  }
+);

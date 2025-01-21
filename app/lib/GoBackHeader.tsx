@@ -1,6 +1,9 @@
 import { Link } from "@remix-run/react";
+import React from "react";
 
-export const GoBackHeader = () => {
+export const GoBackHeader: React.FC<{
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+}> = ({ onClick }) => {
   return (
     <Link
       to="/"
@@ -10,6 +13,7 @@ export const GoBackHeader = () => {
           backdrop-blur-md shadow-lg 
           transition-all duration-300 ease-out
           hover:bg-white/10 hover:shadow-xl group"
+      onClick={onClick}
     >
       <div className="flex items-center space-x-3">
         <span className="text-2xl transform transition-transform duration-300 group-hover:-translate-x-1 text-white">

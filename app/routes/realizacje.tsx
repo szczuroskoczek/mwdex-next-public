@@ -1,6 +1,8 @@
 import { GoBackHeader } from "~/lib/GoBackHeader";
 import { makeMeta } from "~/lib/makeMeta";
 
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
+
 export const meta = makeMeta({
   title: "Realizacje",
   description:
@@ -71,9 +73,19 @@ export default function Portfolio() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => {
-                    !window.confirm(
-                      "Ta strona otworzy się w nowej karcie. Kontynuować?"
-                    ) && e.preventDefault();
+                    if (
+                      window.confirm(
+                        "Ta strona otworzy się w nowej karcie. Kontynuować?"
+                      )
+                    ) {
+                      CustomEvent.trackEvent(
+                        "realizacje_previews",
+                        "click",
+                        project.name
+                      );
+                    } else {
+                      e.preventDefault();
+                    }
                   }}
                   className="block rounded-xl overflow-hidden backdrop-blur-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all"
                 >

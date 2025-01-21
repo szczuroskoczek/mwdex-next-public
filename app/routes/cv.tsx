@@ -3,6 +3,8 @@ import { GoBackHeader } from "~/lib/GoBackHeader";
 import { makeMeta } from "~/lib/makeMeta";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import {
   DownloadIcon,
   MailIcon,
@@ -226,6 +228,9 @@ export const loader = async ({
 };
 
 const NoContent: React.FC = () => {
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = () => {
+    CustomEvent.trackEvent("cv", "cv_request", "Sent");
+  };
   return (
     <div className="max-w-2xl mx-auto text-center">
       <div className="backdrop-blur-lg rounded-xl p-8 bg-white/5">
@@ -237,6 +242,7 @@ const NoContent: React.FC = () => {
           method="post"
           className="flex flex-col items-center gap-4"
           autoComplete="off"
+          onSubmit={onSubmit}
         >
           <input
             type="password"
@@ -430,7 +436,15 @@ export default function Page() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-mwdf-500 to-mwdf-900 pt-24 px-4 pb-6">
-      <GoBackHeader />
+      <GoBackHeader
+        onClick={() => {
+          CustomEvent.trackEvent(
+            "cv",
+            "left_window",
+            data ? "Opened" : "Closed"
+          );
+        }}
+      />
       {data ? <Content data={data} /> : <NoContent />}
     </div>
   );
